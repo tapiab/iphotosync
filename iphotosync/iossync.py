@@ -16,14 +16,12 @@ def mount_idevice(mountpoint: str):
 def list_dcim_folder(mountpoint: str):
     return [ os.path.join(mountpoint,'DCIM',x) for x in os.listdir(os.path.join(mountpoint,'DCIM')) if 'APPLE' in x]
 
+def get_file_list(mountpoint:str):
+    return [item for sublist in list(map(os.listdir, list_dcim_folder(mountpoint))) for item in sublist]
+
 def get_photos_list(mountpoint:str):
+    photos = list(filter(lambda filename: '.JPG'in filename or '.HEIC' in filename),get_file_list(mountpoint))
     photos = list()
-    for f in list_dcim_folder(mountpoint):
-        for (dirpath,dirnames,filenames) in os.walk(f):
-            for photo_file in filenames:
-                if '.HEIC' in photo_file or '.JPG' in photo_file:
-                    photos.append(os.path.join(f,photo_file))
-            break
     
     with exiftool.ExifTool() as et:
         metadata = et.get_metadata_batch(photos)
