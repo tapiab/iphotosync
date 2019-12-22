@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import exiftool
+from shutil import copy
 
 def mount_idevice(mountpoint: str):
     #Check not mounted?: TODO
@@ -16,13 +17,14 @@ def mount_idevice(mountpoint: str):
 def list_dcim_folder(mountpoint: str):
     return [ os.path.join(mountpoint,'DCIM',x) for x in os.listdir(os.path.join(mountpoint,'DCIM')) if 'APPLE' in x]
 
+def listdir_abs(root:str):
+    return [os.path.join(root,x) for x in os.listdir(root)]
+
 def get_file_list(mountpoint:str):
-    return [item for sublist in list(map(os.listdir, list_dcim_folder(mountpoint))) for item in sublist]
+    return [item for sublist in list(map(listdir_abs, list_dcim_folder(mountpoint))) for item in sublist]
 
 def get_photos_list(mountpoint:str):
-    photos = list(filter(lambda filename: '.JPG'in filename or '.HEIC' in filename),get_file_list(mountpoint))
-    photos = list()
-    
+    photos = list(filter(lambda filename: '.JPG'in filename or '.HEIC' in filename,get_file_list(mountpoint)))
     with exiftool.ExifTool() as et:
         metadata = et.get_metadata_batch(photos)
     
@@ -33,15 +35,12 @@ def get_photos_after_date(mountpoint: str, date:str):
     Date format in EXIF yyyy:mm:dd, look for EXIF:CreateDate
     """
     metadata = get_photos_list(mountpoint)
-    filtered_meta = dict()
+    filtered_meta = list()
     for m in metadata:
-        if 'EXIF:CreateDate' in m:
-            if is_after(m['EXIF:CreateDate'].split(' ')[0],date):
-                filtered_meta.update(m)
-        else:
-            print(m)
+        if 'File:FileModifyDate' in m:
+            if is_after(m['File:FileModifyDate'].split(' ')[0],date):
+                filtered_meta.append(m)
     return filtered_meta
-
 
 def is_after(date, origin):
     """
@@ -55,6 +54,16 @@ def is_after(date, origin):
     else:
         return False
     
+def backup_after_date(mountpoint: str, date: str, backup_dir:str):
+    """
+    Copy the photos after the given date
+    """
+    for item in get_photos_after_date(mountpoint,date):
+        if '.HEIC' in item['SourceFile']:
+            convert_from_heif_to_jpg(item['SourceFile'],os.path.join(backup_dir,item['File:FileName']+'.JPG'))
+        else:
+            copy(item['SourceFile'],backup_dir)
+        
 
 def convert_from_heif_to_jpg(filename_in, filemane_out):
     subprocess.run(['heif-convert',filename_in,filemane_out])
