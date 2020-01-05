@@ -60,9 +60,13 @@ def backup_after_date(mountpoint: str, date: str, backup_dir:str):
     """
     for item in get_photos_after_date(mountpoint,date):
         if '.HEIC' in item['SourceFile']:
-            convert_from_heif_to_jpg(item['SourceFile'],os.path.join(backup_dir,item['File:FileName']+'.JPG'))
+            new_name = item['File:FileName'].replace('HEIC','JPG')
+            date = item['File:FileModifyDate'].split(' ')[0].replace(':','.')
+            new_name = date + '_' + new_name
+            convert_from_heif_to_jpg(item['SourceFile'],os.path.join(backup_dir,new_name))
         else:
-            copy(item['SourceFile'],backup_dir)
+            new_name = item['File:FileModifyDate'].split(' ')[0].replace(':','.') + '_' + item['File:FileName']
+            copy(item['SourceFile'],os.path.join(backup_dir,new_name))
         
 
 def convert_from_heif_to_jpg(filename_in, filemane_out):

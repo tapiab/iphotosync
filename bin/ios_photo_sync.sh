@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Check arguments
+if [ "$#" -ne 2 ]; then
+	echo "Invalid number of arguments, ios_photo_sync.sh BACKUP_FOLDER DATE where date is a string like year:month:day corresponding to the oldest photo you want to backup"
+	echo "Now exiting"
+	exit 1
+fi
+
 # Check idevicepair is installed
 which idevicepair >> /dev/null
 if [ $? -ne 0 ]
