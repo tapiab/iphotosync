@@ -49,7 +49,11 @@ def is_after(date, origin):
     #Let's split the strings
     year,month,day=date.split(':')
     oyear, omonth, oday = origin.split(':')
-    if year >= oyear and month >= omonth and day >= oday:
+    if year > oyear:
+        return True
+    elif year == oyear and month > omonth:
+        return True
+    elif year == oyear and month == omonth and day >= oday :
         return True
     else:
         return False
