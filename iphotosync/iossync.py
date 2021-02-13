@@ -23,18 +23,18 @@ def listdir_abs(root:str):
 def get_file_list(mountpoint:str):
     return [item for sublist in list(map(listdir_abs, list_dcim_folder(mountpoint))) for item in sublist]
 
-def get_photos_list(mountpoint:str):
-    photos = list(filter(lambda filename: '.JPG'in filename or '.HEIC' in filename,get_file_list(mountpoint)))
+def get_media_list(mountpoint:str):
+    media = list(filter(lambda filename: '.JPG'in filename or '.HEIC' in filename or '.MOV' in filename or '.mov' in filename,get_file_list(mountpoint)))
     with exiftool.ExifTool() as et:
-        metadata = et.get_metadata_batch(photos)
+        metadata = et.get_metadata_batch(media)
     
     return metadata
 
-def get_photos_after_date(mountpoint: str, date:str):
+def get_media_after_date(mountpoint: str, date:str):
     """
     Date format in EXIF yyyy:mm:dd, look for EXIF:CreateDate
     """
-    metadata = get_photos_list(mountpoint)
+    metadata = get_media_list(mountpoint)
     filtered_meta = list()
     for m in metadata:
         if 'File:FileModifyDate' in m:
@@ -62,7 +62,7 @@ def backup_after_date(mountpoint: str, date: str, backup_dir:str):
     """
     Copy the photos after the given date
     """
-    for item in get_photos_after_date(mountpoint,date):
+    for item in get_media_after_date(mountpoint,date):
         if '.HEIC' in item['SourceFile']:
             new_name = item['File:FileName'].replace('HEIC','JPG')
             date = item['File:FileModifyDate'].split(' ')[0].replace(':','.')
