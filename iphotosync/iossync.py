@@ -68,6 +68,9 @@ def backup_after_date(mountpoint: str, date: str, backup_dir:str):
             date = item['File:FileModifyDate'].split(' ')[0].replace(':','.')
             new_name = date + '_' + new_name
             convert_from_heif_to_jpg(item['SourceFile'],os.path.join(backup_dir,new_name))
+        elif '.MOV' in item['SourceFile'] or '.mov' in item['SourceFile']:
+            new_name = item['QuickTime:MediaCreateDate'].split(' ')[0].replace(':','.') + '_' + item['File:FileName']
+            copy(item['SourceFile'],os.path.join(backup_dir,new_name))  
         else:
             new_name = item['File:FileModifyDate'].split(' ')[0].replace(':','.') + '_' + item['File:FileName']
             copy(item['SourceFile'],os.path.join(backup_dir,new_name))
