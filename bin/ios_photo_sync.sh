@@ -47,7 +47,7 @@ fi
 # Creation du point de montage si il nexiste pas deja
 if [ ! -d $MOUNTPOINT ]
 then
-	sudo mkdir $MOUNTPOINT
+	sudo mkdir -p $MOUNTPOINT
 	sudo chown -R $USER $MOUNTPOINT
 fi
 
