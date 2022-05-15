@@ -15,22 +15,7 @@ then
 	exit 1
 fi
 
-# Check distribution
-DISTRIBNAME=`cat /etc/*release | grep DISTRIB_ID`
-DISTRIBNAME=${DISTRIBNAME#"DISTRIB_ID="}
-
-echo "Distribution is $DISTRIBNAME"
-
-if [ "$DISTRIBNAME" = "Arch" ]; then 
-	MOUNTPOINT="/run/media" 
-elif [ "$DISTRIBNAME" = "Ubuntu" ]; then
-	MOUNTPOINT="/media"
-else
-	echo "Distribution not supported, use Ubuntu or Arch"
-	exit 1
-fi  
-
-MOUNTPOINT=$MOUNTPOINT/$USER/iphone
+MOUNTPOINT=/mnt/iphone
 
 echo "iPhone mountpoint is $MOUNTPOINT"
 
@@ -76,7 +61,7 @@ fi
 
 # Python commande
 CMD="from iphotosync import iossync; iossync.backup_after_date(\"$FROM\",\"$DATE\",\"$TO\")"
-python -c "$CMD"
+python3 -c "$CMD"
 
 # Wait 1 sec before umount, otherwise it won't...
 sleep 1

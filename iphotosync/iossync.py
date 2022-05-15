@@ -25,8 +25,8 @@ def get_file_list(mountpoint:str):
 
 def get_media_list(mountpoint:str):
     media = list(filter(lambda filename: '.JPG'in filename or '.HEIC' in filename or '.MOV' in filename or '.mov' in filename,get_file_list(mountpoint)))
-    with exiftool.ExifTool() as et:
-        metadata = et.get_metadata_batch(media)
+    with exiftool.ExifToolHelper() as et:
+        metadata = et.get_metadata(media)
     
     return metadata
 
