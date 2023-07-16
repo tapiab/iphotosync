@@ -12,7 +12,7 @@ Need libheif and exiftool installed on the system
 
 ## Install
 
-```
+```bash
 > python -m venv /path/to/venv
 > /path/to/venv/bin/pip install dist/*.whl
 ```
