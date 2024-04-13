@@ -30,8 +30,8 @@ def mount_idevice():
 
     logging.info("device is paired")
 
-    with sh.contrib.sudo:
-        sh.ifuse(mountpoint)
+    # with sh.contrib.sudo:
+    sh.ifuse(mountpoint)
 
     logging.info(f"device is mounted on {mountpoint}")
 
@@ -40,7 +40,7 @@ def mount_idevice():
 def run(date: str, backup_dir: str):
     check_environment()
     mount_idevice()
-    # backup_after_date(date, backup_dir)
+    backup_after_date(date, backup_dir)
 
 
 def list_dcim_folder():
@@ -98,7 +98,11 @@ def backup_after_date(date: str, backup_dir: str):
     """
     Copy the photos after the given date
     """
-    for item in get_media_after_date(date):
+    media_list = get_media_after_date(date)
+    i = 0
+    for item in media_list:
+        i = i+1
+        logging.info(f"Processing media {i}/{len(media_list)}")
         if '.HEIC' in item['SourceFile']:
             new_name = item['File:FileName'].replace('HEIC', 'JPG')
             date = item['File:FileModifyDate'].split(' ')[0].replace(':', '-')
